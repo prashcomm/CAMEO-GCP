@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    container_name: cameo_app
+    ports:
+      - "80:8000"
+    environment:
+      - MONGODB_URI=mongodb://mongo:27017
+      - DB_NAME=EventPhotoGallery
+      # Replace with your VM's External IP or Domain
+      - FRONTEND_URL=http://${VM_IP:-localhost}
+      - UPLOAD_DIR=/app/uploads
+      - PORT=8000
+    volumes:
+      - uploads_data:/app/uploads
+    depends_on:
+      - mongo
+    restart: always
+
+  mongo:
+    image: mongo:6.0
+    container_name: cameo_mongo
+    volumes:
+      - mongo_data:/data/db
+    restart: always
+
+volumes:
+  mongo_data:
+  uploads_data:
