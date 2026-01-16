@@ -1,16 +1,18 @@
 {
+    # Global options
     local_certs
+    debug
 }
 
-# Explicitly listen on 443 for the IP and use self-signed certs
-https://{$VM_IP}:443 {
+# Explicitly handle the IP on port 443
+{$VM_IP}:443 {
     tls internal
     reverse_proxy app:8000
     
     encode gzip
 }
 
-# Also handle the IP on port 80 for redirection
-http://{$VM_IP}:80 {
+# Redirect HTTP to HTTPS
+http://{$VM_IP} {
     redir https://{$VM_IP}{uri}
 }
