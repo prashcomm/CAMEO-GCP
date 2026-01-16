@@ -2,15 +2,15 @@
     local_certs
 }
 
-# Explicitly use the VM IP for the TLS block
-{$VM_IP}, :443 {
+# Explicitly listen on 443 for the IP and use self-signed certs
+https://{$VM_IP}:443 {
     tls internal
     reverse_proxy app:8000
     
-    # Increase compression performance
     encode gzip
 }
 
-:80 {
-    redir https://{host}{uri}
+# Also handle the IP on port 80 for redirection
+http://{$VM_IP}:80 {
+    redir https://{$VM_IP}{uri}
 }
