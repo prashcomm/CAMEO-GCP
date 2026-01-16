@@ -1,22 +1,16 @@
 {
-    # Enable internal (self-signed) TLS
     local_certs
 }
 
-:443 {
+# Explicitly use the VM IP for the TLS block
+{$VM_IP}, :443 {
     tls internal
     reverse_proxy app:8000
     
     # Increase compression performance
     encode gzip
-    
-    # Logging
-    log {
-        output file /data/caddy.log
-    }
 }
 
 :80 {
-    # Redirect HTTP to HTTPS
     redir https://{host}{uri}
 }

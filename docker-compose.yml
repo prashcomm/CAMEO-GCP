@@ -24,6 +24,8 @@ services:
     ports:
       - "80:80"
       - "443:443"
+    environment:
+      - VM_IP=${VM_IP:-localhost}
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile
       - caddy_data:/data
