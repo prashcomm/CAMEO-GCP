@@ -364,7 +364,7 @@ async def generate_qr_code(gallery_id: str):
     """Generate QR code for gallery access"""
     try:
         # Generate gallery URL (frontend will be at same domain)
-        gallery_url = f"{getenv_strip('FRONTEND_URL', 'http://localhost:3000')}/gallery/{gallery_id}"
+        gallery_url = f"{getenv_strip('FRONTEND_URL', 'https://localhost:3000')}/gallery/{gallery_id}"
         
         # Create QR code
         qr = qrcode.QRCode(

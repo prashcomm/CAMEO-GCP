@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || '';
 const API = `${BACKEND_URL}/api`;
 
 const HomePage = () => {
@@ -267,7 +267,7 @@ const HomePage = () => {
                 <p className="text-center font-bold uppercase text-sm">
                   Scan QR code or use the link below
                 </p>
-                
+
                 <div className="p-4 bg-[#FFE500] border-3 border-black">
                   <p className="text-sm font-mono font-bold break-all text-center" data-testid="gallery-link" style={{ borderWidth: '3px' }}>
                     {window.location.origin}/gallery/{galleryId}

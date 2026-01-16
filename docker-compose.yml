@@ -1,22 +1,35 @@
-version: '3.8'
-
 services:
   app:
     build: .
     container_name: cameo_app
-    ports:
-      - "80:8000"
+    # Port 8000 is internal, Caddy will expose 80/443
+    expose:
+      - "8000"
     environment:
       - MONGODB_URI=mongodb://mongo:27017
       - DB_NAME=EventPhotoGallery
-      # Replace with your VM's External IP or Domain
-      - FRONTEND_URL=http://${VM_IP:-localhost}
+      # Use https for the frontend URL
+      - FRONTEND_URL=https://${VM_IP:-localhost}
       - UPLOAD_DIR=/app/uploads
       - PORT=8000
     volumes:
       - uploads_data:/app/uploads
     depends_on:
       - mongo
+    restart: always
+
+  caddy:
+    image: caddy:2-alpine
+    container_name: cameo_proxy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - app
     restart: always
 
   mongo:
@@ -29,3 +42,5 @@ services:
 volumes:
   mongo_data:
   uploads_data:
+  caddy_data:
+  caddy_config:

@@ -16,7 +16,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { toast } from 'sonner';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || '';
 const API = `${BACKEND_URL}/api`;
 
 const AdminDashboard = () => {
@@ -452,11 +452,10 @@ const AdminDashboard = () => {
                         }}
                       />
                       <div className="absolute top-2 right-2">
-                        <span className={`px-2 py-1 text-xs font-black uppercase border-2 border-black ${
-                          image.processed 
-                            ? 'bg-[#00FF00] text-black' 
+                        <span className={`px-2 py-1 text-xs font-black uppercase border-2 border-black ${image.processed
+                            ? 'bg-[#00FF00] text-black'
                             : 'bg-[#FFE500] text-black'
-                        }`} style={{ borderWidth: '2px' }}>
+                          }`} style={{ borderWidth: '2px' }}>
                           {image.processed ? 'Done' : 'Pending'}
                         </span>
                       </div>

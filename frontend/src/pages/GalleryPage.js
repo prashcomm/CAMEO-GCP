@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { toast } from 'sonner';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || '';
 const API = `${BACKEND_URL}/api`;
 
 const GalleryPage = () => {
@@ -93,7 +93,7 @@ const GalleryPage = () => {
             <ArrowLeft className="mr-2 w-4 h-4" />
             Back
           </Button>
-          
+
           <div className="border-4 border-black bg-white shadow-[8px_8px_0px_#000000]">
             <div className="p-6">
               <h1 className="text-4xl sm:text-5xl font-black uppercase mb-2" data-testid="gallery-title" style={{ textShadow: '4px 4px 0px #FFE500' }}>
