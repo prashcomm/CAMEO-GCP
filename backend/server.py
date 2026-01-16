@@ -546,6 +546,50 @@ async def delete_user(user_id: str):
         logger.error(f"Delete user error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+@api_router.delete("/admin/image/{image_id}")
+async def delete_image(image_id: str):
+    """Delete an uploaded image and its matches"""
+    try:
+        # Find image first
+        image = await db.images.find_one({"id": image_id})
+        
+        if not image:
+            raise HTTPException(status_code=404, detail="Image not found")
+        
+        # 1. Delete original file
+        orig_path = Path(image['original_path'])
+        if orig_path.exists():
+            orig_path.unlink()
+            logger.info(f"Deleted original image at {orig_path}")
+            
+        # 2. Delete matches in user galleries
+        for user_id in image.get('user_matches', []):
+            user = await db.users.find_one({"id": user_id})
+            if user:
+                user_gallery_path = USERS_DIR / user['gallery_id'] / image['filename']
+                if user_gallery_path.exists():
+                    user_gallery_path.unlink()
+                    logger.info(f"Deleted matched image in user {user['name']}'s gallery")
+        
+        # 3. Remove from database
+        result = await db.images.delete_one({"id": image_id})
+        
+        if result.deleted_count == 0:
+            raise HTTPException(status_code=404, detail="Image not found")
+            
+        logger.info(f"Deleted image record: {image_id}")
+        
+        return {
+            "success": True,
+            "message": f"Image {image['filename']} deleted successfully"
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Delete image error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 # Include the router in the main app
 app.include_router(api_router)
 

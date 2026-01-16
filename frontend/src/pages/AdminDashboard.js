@@ -31,6 +31,8 @@ const AdminDashboard = () => {
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [userToDelete, setUserToDelete] = useState(null);
+  const [imageDeleteDialogOpen, setImageDeleteDialogOpen] = useState(false);
+  const [imageToDelete, setImageToDelete] = useState(null);
 
   useEffect(() => {
     if (isLoggedIn) {
@@ -163,6 +165,29 @@ const AdminDashboard = () => {
     } catch (error) {
       console.error('Delete error:', error);
       toast.error(error.response?.data?.detail || 'Failed to delete user');
+    }
+  };
+
+  const handleDeleteImageClick = (image) => {
+    setImageToDelete(image);
+    setImageDeleteDialogOpen(true);
+  };
+
+  const handleDeleteImageConfirm = async () => {
+    if (!imageToDelete) return;
+
+    try {
+      const response = await axios.delete(`${API}/admin/image/${imageToDelete.id}`);
+
+      if (response.data.success) {
+        toast.success('Image deleted successfully');
+        setImageDeleteDialogOpen(false);
+        setImageToDelete(null);
+        fetchDashboardData();
+      }
+    } catch (error) {
+      console.error('Delete image error:', error);
+      toast.error(error.response?.data?.detail || 'Failed to delete image');
     }
   };
 
@@ -451,13 +476,25 @@ const AdminDashboard = () => {
                           e.target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200"%3E%3Crect fill="%23ddd" width="200" height="200"/%3E%3Ctext fill="%23999" x="50%25" y="50%25" dominant-baseline="middle" text-anchor="middle"%3ENo Preview%3C/text%3E%3C/svg%3E';
                         }}
                       />
-                      <div className="absolute top-2 right-2">
+                      <div className="absolute top-2 right-2 flex flex-col gap-1 items-end">
                         <span className={`px-2 py-1 text-xs font-black uppercase border-2 border-black ${image.processed
-                            ? 'bg-[#00FF00] text-black'
-                            : 'bg-[#FFE500] text-black'
+                          ? 'bg-[#00FF00] text-black'
+                          : 'bg-[#FFE500] text-black'
                           }`} style={{ borderWidth: '2px' }}>
                           {image.processed ? 'Done' : 'Pending'}
                         </span>
+                        <Button
+                          data-testid={`delete-image-${index}-btn`}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeleteImageClick(image);
+                          }}
+                          size="sm"
+                          className="h-8 w-8 p-0 border-2 border-black bg-[#FF006E] hover:bg-[#FF006E] text-white shadow-[2px_2px_0px_#000000]"
+                          style={{ borderWidth: '2px' }}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
                       </div>
                     </div>
                     <div className="p-2">
@@ -480,12 +517,12 @@ const AdminDashboard = () => {
         </div>
       </div>
 
-      {/* Delete Confirmation Dialog */}
+      {/* User Delete Confirmation Dialog */}
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <AlertDialogContent className="bg-white border-4 border-black shadow-[12px_12px_0px_#000000]">
           <AlertDialogHeader>
             <AlertDialogTitle className="text-2xl font-black uppercase">Delete User</AlertDialogTitle>
-            <AlertDialogDescription className="font-bold">
+            <AlertDialogDescription className="font-bold text-black">
               Are you sure you want to delete <strong className="uppercase">{userToDelete?.name}</strong>?
               <br /><br />
               This will permanently delete:
@@ -507,6 +544,45 @@ const AdminDashboard = () => {
               style={{ borderWidth: '3px' }}
             >
               Delete User
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Image Delete Confirmation Dialog */}
+      <AlertDialog open={imageDeleteDialogOpen} onOpenChange={setImageDeleteDialogOpen}>
+        <AlertDialogContent className="bg-white border-4 border-black shadow-[12px_12px_0px_#000000]">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-2xl font-black uppercase">Delete Image</AlertDialogTitle>
+            <AlertDialogDescription className="font-bold text-black">
+              Are you sure you want to delete this image?
+              <br /><br />
+              <div className="flex justify-center border-3 border-black p-2 bg-gray-100">
+                <img
+                  src={imageToDelete ? `${BACKEND_URL}/api/image/admin/${imageToDelete.filename}` : ''}
+                  className="max-h-48 object-contain"
+                  alt="To delete"
+                />
+              </div>
+              <br />
+              This will permanently delete:
+              <ul className="list-disc list-inside mt-2 space-y-1 font-bold">
+                <li>The original uploaded photo</li>
+                <li>All matched copies in users' galleries</li>
+              </ul>
+              <br />
+              <strong className="text-[#FF006E] font-black uppercase">This action cannot be undone.</strong>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel data-testid="delete-image-cancel-btn" className="border-3 border-black font-black uppercase" style={{ borderWidth: '3px' }}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              data-testid="delete-image-confirm-btn"
+              onClick={handleDeleteImageConfirm}
+              className="border-3 border-black bg-[#FF006E] hover:bg-[#FF006E] text-white font-black uppercase shadow-[4px_4px_0px_#000000]"
+              style={{ borderWidth: '3px' }}
+            >
+              Delete Image
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
