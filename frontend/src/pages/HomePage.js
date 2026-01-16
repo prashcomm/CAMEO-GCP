@@ -84,7 +84,7 @@ const HomePage = () => {
         {/* Header */}
         <div className="text-center mb-12">
           <h1 className="text-5xl sm:text-7xl font-black text-black mb-4" style={{ textShadow: '6px 6px 0px #FFE500' }}>
-            EVENT PHOTO GALLERY
+            CAMEO BY COMMUNIQUE
           </h1>
           <p className="text-xl font-bold text-black uppercase tracking-wide">
             Register your face → Get all your photos automatically
